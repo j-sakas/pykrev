@@ -60,6 +60,8 @@ def diversity_indices (msTuple,indices = ['r','GS','SW','C','O','NOSC','DBE','rA
     C_list = []
     O_list = []
     N_list = []
+    Cl_list = []
+    F_list = []
     HC_list = []
     OC_list = []
     NC_list = []
@@ -69,12 +71,16 @@ def diversity_indices (msTuple,indices = ['r','GS','SW','C','O','NOSC','DBE','rA
         O_list.append(i['O'])
         OC_list.append(z['OC'])
         N_list.append(i['N'])
+	F_list.append(i['F'])
+	Cl_list.append(i['Cl'])
         NC_list.append(z['NC'])
     C_list = np.array(C_list)
     O_list = np.array(O_list)
     HC_list = np.array(HC_list)
     OC_list = np.array(OC_list)
     N_list = np.array(N_list)
+    F_list = np.array(F_list)
+    Cl_list = np.array(Cl_list)
     NC_list = np.array(NC_list)
     AI_list = aromaticity_index(formula_list,index_type='rAI')
     DBE_list = double_bond_equivalent(formula_list)
@@ -113,6 +119,8 @@ def diversity_indices (msTuple,indices = ['r','GS','SW','C','O','NOSC','DBE','rA
     D_f_C = 0
     D_f_O = 0
     D_f_N = 0
+    D_f_F = 0
+    D_f_Cl = 0
     D_f_HC = 0 
     D_f_OC = 0
     D_f_NC = 0
@@ -127,6 +135,10 @@ def diversity_indices (msTuple,indices = ['r','GS','SW','C','O','NOSC','DBE','rA
             D_f_O += sum((rel_abundance[i] * rel_abundance[i+1::] * abs(O_list[i] - O_list[i+1::])))
         if 'N' in indices: 
             D_f_N += sum(rel_abundance[i] * rel_abundance[i+1::] * abs(N_list[i] - N_list[i+1::]))
+        if 'F' in indices: 
+            D_f_F += sum(rel_abundance[i] * rel_abundance[i+1::] * abs(F_list[i] - F_list[i+1::]))
+        if 'Cl' in indices: 
+            D_f_Cl += sum(rel_abundance[i] * rel_abundance[i+1::] * abs(Cl_list[i] - Cl_list[i+1::]))
         if 'HC' in indices: 
             D_f_HC += sum(rel_abundance[i] * rel_abundance[i+1::] * abs(HC_list[i] - HC_list[i+1::]))
         if 'OC' in indices: 
@@ -153,6 +165,14 @@ def diversity_indices (msTuple,indices = ['r','GS','SW','C','O','NOSC','DBE','rA
         if verbose == True:
             print('Raos Quadratic Index (N Number): ', D_f_N)
         diversity_indices['D_f_N'] = D_f_N
+    if 'F' in indices: 
+        if verbose == True:
+            print('Raos Quadratic Index (F Number): ', D_f_F)
+        diversity_indices['D_f_F'] = D_f_F
+    if 'Cl' in indices: 
+        if verbose == True:
+            print('Raos Quadratic Index (Cl Number): ', D_f_Cl)
+        diversity_indices['D_f_Cl'] = D_f_Cl
     if 'HC' in indices: 
         if verbose == True:
             print('Raos Quadratic Index (HC Ratio): ', D_f_HC)
