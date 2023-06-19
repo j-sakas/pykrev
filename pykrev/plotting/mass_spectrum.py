@@ -15,6 +15,8 @@ def mass_spectrum(msTuple,
                   invertedAxisLabel = 'Inverted Axis Label',
                   invertedAxisColor = 'b',
                   invertedAxisLineWidth = 0.8,
+                  xlims = None,
+                  ylim = None,
                   **kwargs):
     """ 
     Docstring for function PyKrev.mass_spectrum
@@ -45,11 +47,13 @@ def mass_spectrum(msTuple,
     invertedAxisLabel: string, label for negative y axis
     invertedAxisColor: string, color for inverted axis
     invertedAxisLineWidth: int, line width for inverted axis
+    xlims: tuple, left and right x-axis limits
+    ylim: int, top limit of y-axis
     **kwargs: key word arguments to plt.plot, must not include color or linewidth arguments.
     """
     #Tests
     ## Set default values for color and linewidth unless they have been given in kwargs
-    assert 'color' not in kwargs, 'provide colo(u)r as lineColour'
+    assert 'color' not in kwargs, 'provide colo(u)r as lineColor'
     assert 'lineWidth' not in kwargs, 'provide linewidth as lineWidth'
     assert method in ['monoisotopic','average','nominal','mz'], 'Provide a valid method. See docstring for info.'
     #Setup
@@ -61,6 +65,8 @@ def mass_spectrum(msTuple,
         mass = mz_list
     else: 
         mass = calculate_mass(msTuple, method = method)
+    if xlims:
+        mass = [m for m in mass if m > xlims[0] and m < xlims[1]]
     if len(invertedAxis) > 0:
         assert len(invertedAxis) == len(peak_intensities), 'inverted data must be the same length as peak intensity array'
         peak_intensities = [x for _,x,_ in sorted(zip(mass,peak_intensities, invertedAxis))]
@@ -75,7 +81,10 @@ def mass_spectrum(msTuple,
     ### we can calculate an appropriate step size by finding the minimum difference between adjacent masses
     ### massDiff = np.append(mass,0)[1::] - np.array(mass)
     ### stepSize = str(min(massDiff[::-1]))[::-1].find('.')
-    plotting_mass = np.arange(start=min(mass) - 5,stop = max(mass) + 5, step = 10 ** -stepSize)
+    if xlims:
+        plotting_mass = np.arange(start=xlims[0] - 5,stop = xlims[1] + 5, step = 10 ** -stepSize)
+    else:
+        plotting_mass = np.arange(start=min(mass) - 5,stop = max(mass) + 5, step = 10 ** -stepSize)
     plotting_intensity = np.zeros(len(plotting_mass))
     indices = np.nonzero(np.isin(np.around(plotting_mass,stepSize),np.around(mass,stepSize)))[0]
     assert len(indices) == len(mass), f"{len(indices)} {len(mass)} increase stepSize"
@@ -124,9 +133,13 @@ def mass_spectrum(msTuple,
         #yticks[-2].tick1line.set_visible(False)
     else:
         ax1.set_ylabel("Intensity")
-    ax1.grid(axis='y', alpha=0.75)
+    if xlims:
+        ax1.set_xlim(xlims)
+    if ylim:
+        ax1.set_ylim(-.05*ylim,ylim)
+    #ax1.grid(axis='y', alpha=0.75)
     if method == 'mz':
-        ax1.set_xlabel('m/z')
+        ax1.set_xlabel('$\it{m}$ / $\it{z}$')
     else:
         ax1.set_xlabel(f"{method[0].upper()}{method[1::]} atomic mass")
     if len(invertedAxis) > 0: 
