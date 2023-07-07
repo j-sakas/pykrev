@@ -64,9 +64,7 @@ def mass_spectrum(msTuple,
     if method == 'mz':
         mass = mz_list
     else: 
-        mass = calculate_mass(msTuple, method = method)
-    if xlims:
-        mass = [m for m in mass if m > xlims[0] and m < xlims[1]]
+        mass = calculate_mass(msTuple, method = method)   
     if len(invertedAxis) > 0:
         assert len(invertedAxis) == len(peak_intensities), 'inverted data must be the same length as peak intensity array'
         peak_intensities = [x for _,x,_ in sorted(zip(mass,peak_intensities, invertedAxis))]
@@ -75,6 +73,9 @@ def mass_spectrum(msTuple,
     else:
         peak_intensities = [x for _,x in sorted(zip(mass,peak_intensities))]
         mass = [y for y,_ in sorted(zip(mass,peak_intensities))]
+    if xlims:
+        peak_intensities = [x for y,x in sorted(zip(mass,peak_intensities)) if y <= xlims[1] and y >= xlims[0]]
+        mass = [y for y,x in sorted(zip(mass,peak_intensities)) if y <= xlims[1] and y >= xlims[0]]
     assert len(peak_intensities) == len(mass)
     ## create plotting mass and plotting peak intensity variables 
     ### step size should be based on the precision of the masses
