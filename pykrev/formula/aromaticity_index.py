@@ -27,7 +27,8 @@ def aromaticity_index(msTuple, index_type = 'rAI'):
     ----------
     Reformulated aromaticity index see Mendelez-Perez et al. (2016): 
     "A reformulated aromaticity index equation under consideration for non-aromatic and non-condensed aromatic cyclic carbonyl compounds."
-    Aromaticity index see Koch and Dittmar (2006): From mass to structure: an aromaticity index for high-resolution mass data of natural organic matter"
+    Aromaticity index see Koch and Dittmar (2006): From mass to structure: an aromaticity index for high-resolution mass data of natural organic matter",
+    and erratum Rapid Commun. Mass Spectrom. (2016), 30, 250.
     """ 
     # Tests   
     assert index_type in ['rAI','rAImod','AI','AImod'], 'supply a valid index type, read doc string for more info'
@@ -42,9 +43,9 @@ def aromaticity_index(msTuple, index_type = 'rAI'):
             elif index_type == 'rAI':
                 AI_counts = (1 + 1/2*((count['C']*2)-count['H']-count['Cl']-count['F']-(count['O']*2)-(count['S']*2)-count['N']-count['P']))/count['C']
             elif index_type == 'AImod':
-                AI_counts = (1 + count['C']-(count['Cl']*0.5)-(count['F']*0.5)-(count['H']*0.5)-(count['O']*0.5)-count['S'])/(count['C'] - (count['O']*0.5) - count['N'] - count['S'] - count['P'])
+                AI_counts = (1 + count['C']-(count['Cl']*0.5)-(count['F']*0.5)-(count['H']*0.5)-(count['O']*0.5)-count['S']-(count['N']*0.5)-(count['P']*0.5))/(count['C'] - (count['O']*0.5) - count['N'] - count['S'] - count['P'])
             elif index_type == 'AI':
-                AI_counts = (1 + count['C']-count['O']-count['S']-(count['Cl']*0.5)-(count['F']*0.5)-(count['H']*0.5))/(count['C'] - count['O'] - count['N'] - count['S'] - count['P'])
+                AI_counts = (1 + count['C']-count['O']-count['S']-(count['Cl']*0.5)-(count['F']*0.5)-(count['H']*0.5)-(count['N']*0.5)-(count['P']*0.5))/(count['C'] - count['O'] - count['N'] - count['S'] - count['P'])
         except ZeroDivisionError:
             AI_counts = np.nan
             print(f"Warning Zero Division Encountered, NaN value returned. {count}")
